@@ -24,23 +24,23 @@ func getCityHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call external weather API (OpenWeatherMap)
-	apiKey := "WeatherCheckAssignment"
+	apiKey := "2b4e984d77b5a3d7d3e78833f3c398fa"
 	apiUrl := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=metric", cityName, apiKey)
 	resp, err := http.Get(apiUrl)
 	if err != nil {
-		http.Error(w, "Failed to fetch weather data", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed to fetch weather data, error: %s", err), http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		http.Error(w, "Failed to fetch weather data", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed to fetch weather data, status code: %d", resp.StatusCode), http.StatusInternalServerError)
 		return
 	}
 
 	var weatherData map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
-		http.Error(w, "Failed to decode weather data", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed to decode weather data, error: %s", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -62,7 +62,7 @@ func postCityHandler(w http.ResponseWriter, r *http.Request) {
 		Name string `json:"name"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Invalid JSON input, error: %s", err), http.StatusBadRequest)
 		return
 	}
 
